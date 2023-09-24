@@ -12,6 +12,6 @@ interface WeatherApiInterface {
     suspend fun getWeatherByLocation(
         @Query("lat") lat: String,
         @Query("lon") lon: String,
-        @Query("appid") appId: String = "ade015d3720aea928a78f9fcbd4e28ab"
+        @Query("appid") appId: String = BuildConfig.API_KEY
     ): Response<WeatherModelDTO>
 }
