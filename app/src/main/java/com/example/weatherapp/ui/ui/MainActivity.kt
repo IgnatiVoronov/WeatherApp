@@ -1,15 +1,14 @@
 package com.example.weatherapp.ui.ui
 
 import android.Manifest
-import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
@@ -25,7 +24,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.weatherapp.ext.openAppSettings
 import com.example.weatherapp.ui.HomeScreenViewModel
 import com.example.weatherapp.ui.theme.WeatherAppTheme
 import com.google.android.gms.location.*
@@ -34,7 +32,51 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    override fun onStart() {
+        super.onStart()
+        val locationPermissionRequest = registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ){ permissions ->
+            when{
+                permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION,false)->{
+                    Log.d("TAG", "FINE LOCATION PERMISSION")
+                }
+                permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION,false)->{
+                    Log.d("TAG", "COARSE LOCATION PERMISSION")
+                }
+                else->{
+                    Log.d("TAG", "NO LOCATION PERMISSION")
+                }
+            }
+        }
 
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            locationPermissionRequest.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
+            return
+        }
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            Log.d("TAG", "${location.latitude}, ${location.longitude}")
+            val viewModel: HomeScreenViewModel by viewModels()
+            viewModel.setLocation(location)
+        }
+
+    }
+
+    @SuppressLint("StateFlowValueCalledInComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -46,6 +88,8 @@ class MainActivity : ComponentActivity() {
                     val viewModel = hiltViewModel<HomeScreenViewModel>()
                     val data by viewModel.weatherFlow.collectAsStateWithLifecycle()
 
+
+
                     LaunchedEffect(key1 = Unit) {
                         viewModel.launchLongPolling()
                     }
@@ -53,12 +97,12 @@ class MainActivity : ComponentActivity() {
                     MainScreen(
                         temperature = data?.temperature.toString(),
                         humidity = data?.humidity.toString(),
-                        city = "Unknown"
+                        city = "Undefined"
                     )
-
                 }
             }
         }
+
     }
 }
 

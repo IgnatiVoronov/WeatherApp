@@ -5,17 +5,12 @@ import com.example.weatherapp.model.WeatherRepository
 import com.example.weatherapp.model.data.Main
 import com.example.weatherapp.model.data.WeatherModelDTO
 import com.example.weatherapp.model.data.ui.WeatherInfo
-import com.example.weatherapp.model.network.WeatherApiInterface
-import com.example.weatherapp.model.network.WeatherApiInterfaceMock
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.Mock
 import org.mockito.Mockito
-import org.mockito.junit.MockitoJUnit
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.whenever
 import retrofit2.Response

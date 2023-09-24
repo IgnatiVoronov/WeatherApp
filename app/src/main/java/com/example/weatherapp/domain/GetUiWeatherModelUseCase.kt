@@ -2,7 +2,6 @@ package com.example.weatherapp.domain
 
 import com.example.weatherapp.model.WeatherRepository
 import com.example.weatherapp.model.data.ui.WeatherInfo
-import javax.inject.Inject
 
 class GetUiWeatherModelUseCase(
     private val repo: WeatherRepository
@@ -12,7 +11,7 @@ class GetUiWeatherModelUseCase(
         return if (result.isSuccessful) {
             result.body()?.let { dto ->
                 WeatherInfo(
-                    temperature = farengheitToCelsius(dto.main?.temp),
+                    temperature = kelvinToCelsius(dto.main?.temp),
                     humidity = dto.main?.humidity ?: 0
                 )
             }
@@ -21,9 +20,9 @@ class GetUiWeatherModelUseCase(
         }
     }
 
-    private fun farengheitToCelsius(farengheit: Double?): Double { //TODO: I did here mistake, we receive Kelvins from BE
-        return if (farengheit != null)
-            (farengheit - 32) / 1.8
+    private fun kelvinToCelsius(kelvin: Double?): Double {
+        return if (kelvin != null)
+            kelvin - 273.15
         else {
             0.0
         }
