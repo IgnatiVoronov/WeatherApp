@@ -41,8 +41,9 @@ internal class HomeScreenViewModel @Inject constructor(
     private fun loadWeather() {
         viewModelScope.launch {
             val weatherModel =
-                weatherModelUseCase.getUiWeatherModel(locationLatitude.value.toString(), locationLatitude.value.toString())
+                weatherModelUseCase.getUiWeatherModel(locationLatitude.value.toString(), locationLongitude.value.toString())
 
+            //Log.d("TAG", "kkk ${locationLatitude.value.toString()}, ${locationLongitude.value.toString()}")
             _weatherFlow.emit(weatherModel)
         }
     }

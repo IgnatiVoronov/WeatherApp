@@ -95,9 +95,10 @@ class MainActivity : ComponentActivity() {
                     }
 
                     MainScreen(
-                        temperature = data?.temperature.toString(),
-                        humidity = data?.humidity.toString(),
-                        city = "Undefined"
+                        temperature = "temperature: "+data?.temperature.toString(),
+                        humidity = "humidity: "+data?.humidity.toString(),
+                        city = "Undefined",
+                        location = "location: ${viewModel.locationLatitude.value} ${viewModel.locationLongitude.value}"
                     )
                 }
             }
@@ -112,6 +113,7 @@ fun MainScreen(
     temperature: String,
     humidity: String,
     city: String,
+    location: String
 ) {
     Column(modifier = modifier) {
         Text(
@@ -129,6 +131,11 @@ fun MainScreen(
             fontSize = 32.sp,
             color = Color.Black
         )
+        Text(
+            text = location,
+            fontSize = 16.sp,
+            color = Color.Gray
+        )
     }
 }
 
@@ -140,6 +147,7 @@ fun MainScreenPreview() {
             temperature = "16 C",
             humidity = "76 %",
             city = "Barcelona",
+            location = "Location"
         )
 
     }
